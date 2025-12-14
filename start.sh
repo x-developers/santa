@@ -2,10 +2,13 @@
 set -e
 
 # Get port from Railway or default to 8080
+echo "PORT env variable: $PORT"
 PORT=${PORT:-8080}
+echo "Using port: $PORT"
 
 echo "Configuring nginx for port $PORT..."
 sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/conf.d/default.conf
+cat /etc/nginx/conf.d/default.conf
 
 echo "Starting backend..."
 cd /app

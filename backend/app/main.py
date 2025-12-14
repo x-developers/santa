@@ -30,15 +30,5 @@ def health_check():
     return {"status": "ok"}
 
 
-@app.get("/api")
-def api_root():
-    return {"status": "ok", "version": "1.0.0"}
-
-
-@app.get("/api/health")
-def api_health():
-    return {"status": "ok"}
-
-
 # API routes
 app.include_router(router, prefix="/api")
