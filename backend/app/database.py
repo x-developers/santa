@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/santa.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:////app/data/santa.db")
 
 # Railway PostgreSQL fix
 if DATABASE_URL.startswith("postgres://"):
