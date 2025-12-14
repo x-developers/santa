@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import os
 
 from .database import engine, Base
@@ -22,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# API routes
 app.include_router(router, prefix="/api")
 
 
@@ -30,6 +33,15 @@ def health_check():
     return {"status": "ok"}
 
 
-@app.get("/api/health")
-def api_health_check():
-    return {"status": "ok"}
+# Serve static files
+static_path = "/app/static"
+if os.path.exists(static_path):
+    app.mount("/assets", StaticFiles(directory=f"{static_path}/assets"), name="assets")
+    
+    @app.get("/{full_path:path}")
+    async def serve_spa(request: Request, full_path: str):
+        # Serve index.html for all non-API routes (SPA)
+        file_path = os.path.join(static_path, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(os.path.join(static_path, "index.html"))
