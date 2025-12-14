@@ -8,18 +8,25 @@ echo "Using port: $PORT"
 
 echo "Configuring nginx for port $PORT..."
 sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/conf.d/default.conf
-cat /etc/nginx/conf.d/default.conf
 
 echo "Starting backend..."
 cd /app
 uvicorn app.main:app --host 127.0.0.1 --port 8000 &
 BACKEND_PID=$!
 
-# Wait for backend to start
-sleep 3
+# Wait for backend to be ready
+echo "Waiting for backend to be ready..."
+for i in {1..30}; do
+    if curl -s http://127.0.0.1:8000/health > /dev/null 2>&1; then
+        echo "Backend is ready!"
+        break
+    fi
+    echo "Attempt $i: Backend not ready yet..."
+    sleep 1
+done
 
-# Check if backend is running
-if ! kill -0 $BACKEND_PID 2>/dev/null; then
+# Final check
+if ! curl -s http://127.0.0.1:8000/health > /dev/null 2>&1; then
     echo "Backend failed to start!"
     exit 1
 fi

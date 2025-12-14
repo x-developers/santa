@@ -10,8 +10,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Install nginx and curl
+RUN apt-get update && apt-get install -y nginx curl && rm -rf /var/lib/apt/lists/*
 
 # Backend dependencies
 COPY backend/requirements.txt .
