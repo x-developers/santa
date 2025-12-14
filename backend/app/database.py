@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/santa.db")
+# Use /tmp for Railway (writable), fallback to data/ for local
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:////tmp/santa.db")
 
 # SQLite specific
 connect_args = {}

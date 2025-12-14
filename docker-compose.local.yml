@@ -6,7 +6,5 @@ services:
     container_name: santa-app
     ports:
       - "8080:8080"
-    volumes:
-      - ./data:/tmp
     environment:
       - DATABASE_URL=sqlite:////tmp/santa.db
