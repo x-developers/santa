@@ -1,17 +1,21 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 import os
+import logging
+
+# Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create data directory
+os.makedirs("data", exist_ok=True)
 
 from .database import engine, Base
 from .routes import router
 
-# Create data directory
-os.makedirs("/app/data", exist_ok=True)
-
 # Create tables
 Base.metadata.create_all(bind=engine)
+logger.info("Database tables created")
 
 app = FastAPI(title="Secret Santa API", version="1.0.0")
 
@@ -24,24 +28,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API routes
-app.include_router(router, prefix="/api")
-
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
 
-# Serve static files
-static_path = "/app/static"
-if os.path.exists(static_path):
-    app.mount("/assets", StaticFiles(directory=f"{static_path}/assets"), name="assets")
-    
-    @app.get("/{full_path:path}")
-    async def serve_spa(request: Request, full_path: str):
-        # Serve index.html for all non-API routes (SPA)
-        file_path = os.path.join(static_path, full_path)
-        if os.path.isfile(file_path):
-            return FileResponse(file_path)
-        return FileResponse(os.path.join(static_path, "index.html"))
+@app.get("/api")
+def api_root():
+    return {"status": "ok", "version": "1.0.0"}
+
+
+@app.get("/api/health")
+def api_health():
+    return {"status": "ok"}
+
+
+# API routes
+app.include_router(router, prefix="/api")

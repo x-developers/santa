@@ -10,6 +10,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install nginx
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+
 # Backend dependencies
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -18,13 +21,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/app ./app
 
 # Frontend build
-COPY --from=frontend-builder /frontend/dist ./static
+COPY --from=frontend-builder /frontend/dist /var/www/html
 
-# Create data directory
-RUN mkdir -p /app/data
+# Nginx config
+RUN rm -f /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-ENV PORT=8080
+# Start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-EXPOSE $PORT
+EXPOSE 8080
 
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
+CMD ["/start.sh"]

@@ -1,23 +1,22 @@
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 export const api = {
   async createGame() {
-    const res = await fetch(`${API_URL}/api/games`, {
+    const res = await fetch('/api/games', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({})
     });
+    if (!res.ok) throw new Error('Failed to create game');
     return res.json();
   },
 
   async getGame(code) {
-    const res = await fetch(`${API_URL}/api/games/${code}`);
+    const res = await fetch(`/api/games/${code}`);
     if (!res.ok) throw new Error('Game not found');
     return res.json();
   },
 
   async addParticipant(code, name, wishlist) {
-    const res = await fetch(`${API_URL}/api/games/${code}/participants`, {
+    const res = await fetch(`/api/games/${code}/participants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, wishlist: wishlist || null })
@@ -30,13 +29,13 @@ export const api = {
   },
 
   async removeParticipant(code, participantId) {
-    await fetch(`${API_URL}/api/games/${code}/participants/${participantId}`, {
+    await fetch(`/api/games/${code}/participants/${participantId}`, {
       method: 'DELETE'
     });
   },
 
   async shuffle(code) {
-    const res = await fetch(`${API_URL}/api/games/${code}/shuffle`, {
+    const res = await fetch(`/api/games/${code}/shuffle`, {
       method: 'POST'
     });
     if (!res.ok) {
@@ -47,7 +46,7 @@ export const api = {
   },
 
   async reshuffle(code) {
-    const res = await fetch(`${API_URL}/api/games/${code}/reshuffle`, {
+    const res = await fetch(`/api/games/${code}/reshuffle`, {
       method: 'POST'
     });
     if (!res.ok) {
@@ -58,7 +57,7 @@ export const api = {
   },
 
   async getAssignment(token) {
-    const res = await fetch(`${API_URL}/api/participant/${token}`);
+    const res = await fetch(`/api/participant/${token}`);
     if (!res.ok) {
       const data = await res.json();
       throw new Error(data.detail || 'Error');

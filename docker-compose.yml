@@ -8,7 +8,8 @@ services:
       - ./data:/app/data
     ports:
       - "8000:8000"
-    restart: unless-stopped
+    environment:
+      - DATABASE_URL=sqlite:////app/data/santa.db
 
   frontend:
     build: ./frontend
@@ -17,4 +18,3 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-    restart: unless-stopped
